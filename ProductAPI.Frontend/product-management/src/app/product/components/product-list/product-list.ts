@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ProductService } from '../../services/product';
 import { Product, ProductQuery, PagedResult, ApiResponse } from '../../models/product.model';
 
@@ -21,7 +21,10 @@ export class ProductListComponent implements OnInit {
   hasNextPage = false;
   hasPreviousPage = false;
 
-  constructor(private productService: ProductService) { }
+  constructor(
+    private productService: ProductService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
     this.loadProducts();
@@ -41,7 +44,9 @@ export class ProductListComponent implements OnInit {
     this.productService.getProducts(query).subscribe({
       next: (response: ApiResponse<PagedResult<Product>>) => {
         console.log('API Response:', response); // Debug logging
+        console.log('Setting loading to false...'); // Debug logging
         this.loading = false;
+        console.log('Loading is now:', this.loading); // Debug logging
 
         if (response.success && response.data) {
           console.log('Response data:', response.data); // Debug logging
@@ -54,6 +59,12 @@ export class ProductListComponent implements OnInit {
           this.hasPreviousPage = response.data.hasPreviousPage || false;
 
           console.log('Products loaded:', this.products.length); // Debug logging
+          console.log('Products array:', this.products); // Debug logging
+          console.log('Component state - loading:', this.loading, 'error:', this.error); // Debug logging
+
+          // Force change detection
+          this.cdr.detectChanges();
+          console.log('Change detection triggered'); // Debug logging
 
           if (this.products.length === 0) {
             console.warn('No products found in response');
@@ -61,11 +72,13 @@ export class ProductListComponent implements OnInit {
         } else {
           console.error('API response failed:', response);
           this.error = response.message || 'Có lỗi xảy ra khi tải dữ liệu';
+          this.cdr.detectChanges(); // Force change detection for error case too
         }
       },
       error: (err) => {
         this.loading = false;
         this.error = 'Không thể kết nối đến server. Vui lòng kiểm tra lại.';
+        this.cdr.detectChanges(); // Force change detection for error case
         console.error('Error loading products:', err);
       }
     });
