@@ -1,0 +1,29 @@
+# Visual Studio
+.vs/
+
+# .NET Core build artifacts
+**/bin/
+**/obj/
+**/*.user
+**/*.suo
+
+# Node.js dependencies
+node_modules/
+
+# Angular build artifacts
+ProductAPI.Frontend/product-management/dist/
+ProductAPI.Frontend/product-management/tmp/
+
+# Log files
+*.log
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# IDE files
+*.swp
+*.swo
+.DS_Store
+Thumbs.db

@@ -1,0 +1,74 @@
+<div class="product-list-container">
+  <h2>Danh sách sản phẩm</h2>
+
+  <!-- Loading indicator -->
+  <div *ngIf="loading" class="loading">
+    <p>Đang tải dữ liệu...</p>
+  </div>
+
+  <!-- Error message -->
+  <div *ngIf="error" class="error">
+    <p>{{ error }}</p>
+    <button (click)="loadProducts()" class="retry-btn">Thử lại</button>
+  </div>
+
+  <!-- Products table -->
+  <div *ngIf="!loading && !error" class="products-section">
+    <div class="products-info">
+      <p>Tổng số sản phẩm: {{ totalCount }} | Trang {{ currentPage }} / {{ totalPages }}</p>
+    </div>
+
+    <!-- Show table only if products exist -->
+    <table class="products-table" *ngIf="products && products.length > 0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Tên sản phẩm</th>
+          <th>Mô tả</th>
+          <th>Giá bán</th>
+          <th>Số lượng</th>
+          <th>Danh mục</th>
+          <th>Ngày tạo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of products; trackBy: trackByProductId">
+          <td>{{ product.id }}</td>
+          <td>{{ product.name }}</td>
+          <td>{{ product.description || 'Không có mô tả' }}</td>
+          <td>{{ product.price | currency:'VND':'symbol':'1.0-0' }}</td>
+          <td>{{ product.stockQuantity }}</td>
+          <td>{{ product.category?.name || 'Chưa phân loại' }}</td>
+          <td>{{ product.createdAt | date:'dd/MM/yyyy' }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="totalPages > 1">
+      <button
+        (click)="previousPage()"
+        [disabled]="!hasPreviousPage"
+        class="page-btn">
+        Trang trước
+      </button>
+
+      <span class="page-info">
+        Trang {{ currentPage }} / {{ totalPages }}
+      </span>
+
+      <button
+        (click)="nextPage()"
+        [disabled]="!hasNextPage"
+        class="page-btn">
+        Trang sau
+      </button>
+    </div>
+
+    <!-- No products message -->
+    <div *ngIf="!products || products.length === 0" class="no-products">
+      <p>Không có sản phẩm nào được tìm thấy.</p>
+      <button (click)="loadProducts()" class="retry-btn">Tải lại</button>
+    </div>
+  </div>
+</div>
