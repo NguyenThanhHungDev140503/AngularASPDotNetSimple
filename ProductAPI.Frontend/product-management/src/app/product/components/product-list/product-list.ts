@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ProductService } from '../../services/product';
 import { Product, ProductQuery, PagedResult, ApiResponse } from '../../models/product.model';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-product-list',
@@ -15,7 +16,7 @@ export class ProductListComponent implements OnInit {
 
   // Pagination
   currentPage = 1;
-  pageSize = 10;
+  pageSize = environment.pagination.defaultPageSize;
   totalCount = 0;
   totalPages = 0;
   hasNextPage = false;
@@ -43,14 +44,20 @@ export class ProductListComponent implements OnInit {
 
     this.productService.getProducts(query).subscribe({
       next: (response: ApiResponse<PagedResult<Product>>) => {
-        console.log('API Response:', response); // Debug logging
-        console.log('Setting loading to false...'); // Debug logging
+        if (environment.enableDebugLogging) {
+          console.log('API Response:', response); // Debug logging
+          console.log('Setting loading to false...'); // Debug logging
+        }
         this.loading = false;
-        console.log('Loading is now:', this.loading); // Debug logging
+        if (environment.enableDebugLogging) {
+          console.log('Loading is now:', this.loading); // Debug logging
+        }
 
         if (response.success && response.data) {
-          console.log('Response data:', response.data); // Debug logging
-          console.log('Items array:', response.data.items); // Debug logging
+          if (environment.enableDebugLogging) {
+            console.log('Response data:', response.data); // Debug logging
+            console.log('Items array:', response.data.items); // Debug logging
+          }
 
           this.products = response.data.items || [];
           this.totalCount = response.data.totalCount || 0;
@@ -58,19 +65,26 @@ export class ProductListComponent implements OnInit {
           this.hasNextPage = response.data.hasNextPage || false;
           this.hasPreviousPage = response.data.hasPreviousPage || false;
 
-          console.log('Products loaded:', this.products.length); // Debug logging
-          console.log('Products array:', this.products); // Debug logging
-          console.log('Component state - loading:', this.loading, 'error:', this.error); // Debug logging
+          if (environment.enableDebugLogging) {
+            console.log('Products loaded:', this.products.length); // Debug logging
+            console.log('Products array:', this.products); // Debug logging
+            console.log('Component state - loading:', this.loading, 'error:', this.error); // Debug logging
+          }
 
           // Force change detection
           this.cdr.detectChanges();
-          console.log('Change detection triggered'); // Debug logging
 
-          if (this.products.length === 0) {
+          if (environment.enableDebugLogging) {
+            console.log('Change detection triggered'); // Debug logging
+          }
+
+          if (this.products.length === 0 && environment.enableDebugLogging) {
             console.warn('No products found in response');
           }
         } else {
-          console.error('API response failed:', response);
+          if (environment.enableDebugLogging) {
+            console.error('API response failed:', response);
+          }
           this.error = response.message || 'Có lỗi xảy ra khi tải dữ liệu';
           this.cdr.detectChanges(); // Force change detection for error case too
         }
@@ -79,7 +93,9 @@ export class ProductListComponent implements OnInit {
         this.loading = false;
         this.error = 'Không thể kết nối đến server. Vui lòng kiểm tra lại.';
         this.cdr.detectChanges(); // Force change detection for error case
-        console.error('Error loading products:', err);
+        if (environment.enableDebugLogging) {
+          console.error('Error loading products:', err);
+        }
       }
     });
   }

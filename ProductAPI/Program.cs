@@ -8,6 +8,16 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ===== ENVIRONMENT VALIDATION =====
+// Thêm environment validation services
+builder.Services.AddEnvironmentValidation(builder.Configuration);
+
+// Validate configuration ngay khi khởi động
+builder.Services.ValidateConfigurationOnStartup(builder.Configuration);
+
+// Test database connection (async)
+await builder.Services.TestDatabaseConnectionAsync(builder.Configuration);
+
 // Add services to the container
 builder.Services.AddControllers();
 
