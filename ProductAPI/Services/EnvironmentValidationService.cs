@@ -35,8 +35,16 @@ namespace ProductAPI.Services
                 // Validate cross-configuration dependencies
                 ValidateCrossConfigurationDependencies(configuration, result);
 
-                _logger.LogInformation("Configuration validation completed. IsValid: {IsValid}, Errors: {ErrorCount}, Warnings: {WarningCount}",
-                    result.IsValid, result.Errors.Count, result.Warnings.Count);
+                if (result.IsValid)
+                {
+                    _logger.LogInformation("Configuration validation completed. IsValid: {IsValid}, Errors: {ErrorCount}, Warnings: {WarningCount}",
+                        result.IsValid, result.Errors.Count, result.Warnings.Count);
+                }
+                else
+                {
+                    _logger.LogError("Configuration validation completed. IsValid: {IsValid}, Errors: {ErrorCount}, Warnings: {WarningCount}",
+                        result.IsValid, result.Errors.Count, result.Warnings.Count);
+                }
             }
             catch (Exception ex)
             {
